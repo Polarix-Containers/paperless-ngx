@@ -8,4 +8,4 @@ RUN apt update \
     && apt upgrade -y \
     && apt purge -y gosu
 
-RUN apt purge -y postgres*
+RUN apt purge -y mariadb* postgres*
