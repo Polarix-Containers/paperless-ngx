@@ -15,7 +15,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 # Missing icc-profiles-free and tesseract-ocr languages
 
 RUN apk -U upgrade \
-    && apk add -u gosu bash coreutils curl font-liberation gettext ghostscript imagemagick gnupg mariadb-client tesseract-ocr tzdata unpaper pngquant jbig2dec libxml2 libxslt qpdf file libmagic zlib libzbar poppler-utils \
+    && apk add -u bash coreutils curl font-liberation gettext ghostscript imagemagick gnupg mariadb-client tesseract-ocr tzdata unpaper pngquant jbig2dec libxml2 libxslt qpdf file libmagic zlib libzbar poppler-utils \
     && rm -rf /var/cache/apk/*
 
 RUN python3 -m pip install --default-timeout=1000 --upgrade --no-cache-dir supervisor==4.2.5
@@ -29,9 +29,6 @@ COPY --from=extract /usr/src/paperless/gunicorn.conf.py .
 # setup docker-specific things
 # These change sometimes, but rarely
 WORKDIR /usr/src/paperless/src/docker/
-
-COPY --from=ghcr.io/polarix-containers/hardened_malloc:latest /install /usr/local/lib/
-ENV LD_PRELOAD="/usr/local/lib/libhardened_malloc.so"
 
 # add users, setup scripts
 # Mount the compiled frontend to expected location
@@ -47,9 +44,12 @@ RUN echo "Setting up user/group" \
     && mkdir -m700 --verbose /usr/src/paperless/.gnupg \
     && echo "Adjusting all permissions" \
     && chown --from root:root --changes --recursive paperless:paperless /usr/src/paperless \
-    && echo "Collecting static files" \
-    && gosu paperless python3 manage.py collectstatic --clear --no-input --link \
-    && gosu paperless python3 manage.py compilemessages
+    && echo "Collecting static files"
+#    && gosu paperless python3 manage.py collectstatic --clear --no-input --link \
+#    && gosu paperless python3 manage.py compilemessages
+
+COPY --from=ghcr.io/polarix-containers/hardened_malloc:latest /install /usr/local/lib/
+ENV LD_PRELOAD="/usr/local/lib/libhardened_malloc.so"
 
 VOLUME ["/usr/src/paperless/data", \
         "/usr/src/paperless/media", \
