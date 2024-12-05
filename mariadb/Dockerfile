@@ -15,5 +15,5 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 # Missing icc-profiles-free
 
 RUN apk -U upgrade \
-    && apk add -u bash coreutils curl font-liberation gettext ghostscript icc-profiles-free imagemagick gnupg mariadb-client tesseract-ocr tzdata unpaper pngquant jbig2dec libxml2 libxslt qpdf file libmagic zlib libzbar poppler-utils \
+    && apk add -u bash coreutils curl font-liberation gettext ghostscript imagemagick gnupg mariadb-client tesseract-ocr tzdata unpaper pngquant jbig2dec libxml2 libxslt qpdf file libmagic zlib libzbar poppler-utils \
     && rm -rf /var/cache/apk/*
