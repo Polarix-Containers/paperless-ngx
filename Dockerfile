@@ -32,3 +32,15 @@ WORKDIR /usr/src/paperless/src/docker/
 
 COPY --from=ghcr.io/polarix-containers/hardened_malloc:latest /install /usr/local/lib/
 ENV LD_PRELOAD="/usr/local/lib/libhardened_malloc.so"
+
+VOLUME ["/usr/src/paperless/data", \
+        "/usr/src/paperless/media", \
+        "/usr/src/paperless/consume", \
+        "/usr/src/paperless/export"]
+
+EXPOSE 8000
+
+ENTRYPOINT ["/sbin/docker-entrypoint.sh"]
+
+HEALTHCHECK --interval=30s --timeout=10s --retries=5 CMD [ "curl", "-fs", "-S", "--max-time", "2", "http://localhost:8000" ]
+CMD ["/usr/local/bin/paperless_cmd.sh"]
