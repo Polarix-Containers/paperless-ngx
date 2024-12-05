@@ -41,19 +41,16 @@ WORKDIR /usr/src/paperless/src/docker/
 RUN adduser -u ${UID} -g ${GID} --disabled-password --system paperless -m -d /usr/src/paperless
 
 RUN echo "Creating volume directories" \
-    && mkdir --parents --verbose /usr/src/paperless/data \
-    && mkdir --parents --verbose /usr/src/paperless/media \
-    && mkdir --parents --verbose /usr/src/paperless/consume \
-    && mkdir --parents --verbose /usr/src/paperless/export \
+    && mkdir -p /usr/src/paperless/data /usr/src/paperless/media /usr/src/paperless/consume /usr/src/paperless/export \
     && echo "Creating gnupg directory" \
     && mkdir -m700 --verbose /usr/src/paperless/.gnupg \
     && echo "Adjusting all permissions" \
     && chown --from root:root --changes --recursive paperless:paperless /usr/src/paperless
 
 USER paperless
-    echo "Collecting static files" \
-    && python3 manage.py collectstatic --clear --no-input --link \
-    && python3 manage.py compilemessages
+RUN echo "Collecting static files"
+#    && python3 manage.py collectstatic --clear --no-input --link \
+#    && python3 manage.py compilemessages
 
 COPY --from=ghcr.io/polarix-containers/hardened_malloc:latest /install /usr/local/lib/
 ENV LD_PRELOAD="/usr/local/lib/libhardened_malloc.so"
