@@ -12,6 +12,8 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONWARNINGS="ignore:::django.http.response:517" \
     PNGX_CONTAINERIZED=1
 
+# Missing icc-profiles-free
+
 RUN apk -U upgrade \
-    && apk add -u bash coreutils curl font-liberation gettext ghostscript icc-profiles-free imagemagick gnupg mariadb-client tesseract-ocr tzdata unpaper pngquant jbig2dec libxml2 libxslt1.1 qpdf file libmagic1 media-types zlib libzbar0 poppler-utils \
+    && apk add -u bash coreutils curl font-liberation gettext ghostscript imagemagick gnupg mariadb-client tesseract-ocr tzdata unpaper pngquant jbig2dec libxml2 libxslt qpdf file libmagic zlib libzbar poppler-utils \
     && rm -rf /var/cache/apk/*
