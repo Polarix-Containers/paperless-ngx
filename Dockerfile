@@ -20,10 +20,8 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 # Missing icc-profiles-free and tesseract-ocr languages
 
 RUN apk -U upgrade \
-    && apk add -u bash coreutils curl font-liberation gettext ghostscript imagemagick gnupg mariadb-client tesseract-ocr tzdata unpaper pngquant jbig2dec libxml2 libxslt qpdf file libmagic zlib libzbar poppler-utils \
+    && apk add -u bash coreutils curl font-liberation gettext ghostscript imagemagick gnupg mariadb-client tesseract-ocr tzdata unpaper pngquant jbig2dec libxml2 libxslt qpdf file libmagic zlib libzbar poppler-utils supervisor \
     && rm -rf /var/cache/apk/*
-
-RUN python3 -m pip install --default-timeout=1000 --upgrade --no-cache-dir supervisor==4.2.5
 
 # Copy gunicorn config
 # Changes very infrequently
