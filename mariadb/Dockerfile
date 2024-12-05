@@ -13,5 +13,5 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PNGX_CONTAINERIZED=1
 
 RUN apk -U upgrade \
-    && apk add -u bash coreutils curl font-liberation gettext ghostscript icc-profiles-free imagemagick gnupg mariadb-client tesseract-ocr tesseract-ocr-eng tesseract-ocr-deu tesseract-ocr-fra tesseract-ocr-ita tesseract-ocr-spa tzdata unpaper pngquant jbig2dec libxml2 libxslt1.1 qpdf file libmagic1 media-types zlib1g libzbar0 poppler-utils \
+    && apk add -u bash coreutils curl font-liberation gettext ghostscript icc-profiles-free imagemagick gnupg mariadb-client tesseract-ocr tzdata unpaper pngquant jbig2dec libxml2 libxslt1.1 qpdf file libmagic1 media-types zlib libzbar0 poppler-utils \
     && rm -rf /var/cache/apk/*
