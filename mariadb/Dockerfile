@@ -1,12 +1,17 @@
-FROM ghcr.io/paperless-ngx/paperless-ngx:latest
+FROM python:3.12-alpine
 
-LABEL maintainer="Thien Tran contact@tommytran.io"
-ARG DEBIAN_FRONTEND=noninteractive
+# Can be workflow provided, defaults set for manual building
+ARG JBIG2ENC_VERSION=0.29
+ARG QPDF_VERSION=11.9.0
+ARG GS_VERSION=10.03.1
 
-COPY etc/apt/sources.list.d/debian.sources /etc/apt/sources.list.d/debian.sources
+# Set Python environment variables
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    # Ignore warning from Whitenoise
+    PYTHONWARNINGS="ignore:::django.http.response:517" \
+    PNGX_CONTAINERIZED=1
 
-RUN apt update \
-    && apt full-upgrade -y \
-    && apt purge -y gosu
-
-RUN apt purge -y mariadb* postgres*
+RUN apk -U upgrade \
+    && apk add -u bash coreutils curl font-liberation gettext ghostscript icc-profiles-free imagemagick gnupg mariadb-client tesseract-ocr tesseract-ocr-eng tesseract-ocr-deu tesseract-ocr-fra tesseract-ocr-ita tesseract-ocr-spa tzdata unpaper pngquant jbig2dec libxml2 libxslt1.1 qpdf file libmagic1 media-types zlib1g libzbar0 poppler-utils \
+    && rm -rf /var/cache/apk/*
