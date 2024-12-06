@@ -43,7 +43,7 @@ RUN echo "Creating volume directories" \
     && echo "Creating gnupg directory" \
     && mkdir -m700 --verbose /usr/src/paperless/.gnupg \
     && echo "Adjusting all permissions" \
-    && chown --from root:root --changes --recursive paperless:paperless /usr/src/paperless
+    && chown -R paperless:paperless /usr/src/paperless
 
 USER paperless
 RUN echo "Collecting static files"
