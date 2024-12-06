@@ -3,9 +3,13 @@ ARG PYTHON=3.12
 ARG UID=3007
 ARG GID=3007
 
-FROM ghcr.io/paperless-ngx/paperless-ngx:latest as extract
+FROM ghcr.io/paperless-ngx/paperless-ngx:latest AS extract
 
+# We have to pin Alpine version here, as not all dependencies will be immediately
+# available in the latest Alpine version
 FROM python:${PYTHON}-alpine${ALPINE}
+
+LABEL maintainer="Thien Tran contact@tommytran.io"
 
 ARG UID
 ARG GID
@@ -20,7 +24,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 # Missing icc-profiles-free and tesseract-ocr languages
 
 RUN apk -U upgrade \
-    && apk add -u bash coreutils curl font-liberation gettext ghostscript imagemagick gnupg mariadb-client tesseract-ocr tzdata unpaper pngquant jbig2dec libxml2 libxslt qpdf file libmagic zlib libzbar poppler-utils supervisor \
+    && apk add -u bash coreutils curl font-liberation gettext ghostscript imagemagick gnupg mariadb-client tesseract-ocr tzdata unpaper pngquant jbig2dec libxml2 libxslt qpdf file libmagic zlib libzbar poppler-utils supervisor libstdc++ \
     && rm -rf /var/cache/apk/*
 
 # Copy gunicorn config
