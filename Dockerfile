@@ -36,7 +36,7 @@ WORKDIR /usr/src/paperless/src/docker/
 # add users, setup scripts
 # Mount the compiled frontend to expected location
 
-RUN  adduser -u ${UID} -g ${GID} paperless --disabled-password --system --home /usr/src/paperless paperless
+RUN  adduser -u ${UID} -g ${GID} --disabled-password --system --home /usr/src/paperless paperless
 
 RUN echo "Creating volume directories" \
     && mkdir -p /usr/src/paperless/data /usr/src/paperless/media /usr/src/paperless/consume /usr/src/paperless/export \
