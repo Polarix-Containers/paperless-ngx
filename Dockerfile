@@ -20,7 +20,6 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PNGX_CONTAINERIZED=1
 
 # Install dependencies
-# Alpine does not have icc-profiles-free
 
 RUN apk -U upgrade \
     && apk add -u bash coreutils curl libstdc++ supervisor tzdata \
@@ -31,8 +30,7 @@ RUN apk -U upgrade \
         unpaper pngquant jbig2dec libxml2 libxslt qpdf \
         file libmagic zlib \
         libzbar poppler-utils \
-    && ln -s /usr/bin/supervisord /usr/local/bin/supervisord \
-    && mkdir -p /var/log/supervisord/
+    && ln -s /usr/bin/supervisord /usr/local/bin/supervisord
 
 # Copy docker specific files
 COPY --from=extract /etc/ImageMagick-6/policy.xml /etc/ImageMagick-6/
@@ -57,8 +55,7 @@ RUN --mount=type=cache,target=/root/.cache/pip/,id=pip-cache \
     && python3 -m nltk.downloader -d "/usr/share/nltk_data" stopwords \
     && python3 -m nltk.downloader -d "/usr/share/nltk_data" punkt_tab \
     && apk del .build-deps \
-    && rm -rf /var/cache/apk/* /var/tmp/* /tmp/* \
-    && truncate --size 0 /var/log/*log
+    && rm -rf /var/cache/apk/* /var/tmp/* /tmp/* 
 
 RUN addgroup -g ${GID} paperless \
     && adduser -u ${UID} --ingroup paperless --disabled-password --system --home /usr/src/paperless paperless \
