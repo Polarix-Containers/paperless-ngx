@@ -30,7 +30,8 @@ RUN apk -U upgrade \
         tesseract-ocr tesseract-ocr-data-eng tesseract-ocr-data-deu tesseract-ocr-data-fra tesseract-ocr-data-ita tesseract-ocr-data-spa \
         unpaper pngquant jbig2dec libxml2 libxslt qpdf \
         file libmagic zlib \
-        libzbar poppler-utils
+        libzbar poppler-utils \
+        ln -s /usr/bin/supervisord /usr/local/bin/supervisord
 
 # Copy docker specific files
 COPY --from=extract /etc/ImageMagick-6/policy.xml /etc/ImageMagick-6/
