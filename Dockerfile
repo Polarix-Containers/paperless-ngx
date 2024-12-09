@@ -63,7 +63,7 @@ RUN --mount=type=cache,target=/root/.cache/pip/,id=pip-cache \
     && python3 -m nltk.downloader -d "/usr/share/nltk_data" stopwords \
     && python3 -m nltk.downloader -d "/usr/share/nltk_data" punkt_tab \
     && apk del .build-deps \
-    && rm -rf *.whl /var/cache/apt/archives/* /var/cache/apk/* /var/lib/apt/lists/* /var/tmp/* /tmp/* \
+    && rm -rf /var/cache/apk/* /var/tmp/* /tmp/* \
     && truncate --size 0 /var/log/*log
 
 RUN addgroup -g ${GID} paperless \
