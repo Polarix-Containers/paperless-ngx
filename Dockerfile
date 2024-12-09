@@ -30,13 +30,8 @@ RUN apk -U upgrade \
         tesseract-ocr tesseract-ocr-data-eng tesseract-ocr-data-deu tesseract-ocr-data-fra tesseract-ocr-data-ita tesseract-ocr-data-spa \
         unpaper pngquant jbig2dec libxml2 libxslt qpdf \
         file libmagic zlib \
-        libzbar poppler-utils
-
-# Create necessary directories
-RUN mkdir -p /usr/src/paperless/src/docker
-
-# Copy gunicorn config
-COPY --from=extract /usr/src/paperless/gunicorn.conf.py /usr/src/paperless/
+        libzbar poppler-utils \
+    && rm -rf /var/cache/apk/*
 
 # Copy docker specific files
 COPY --from=extract /etc/ImageMagick-6/policy.xml /etc/ImageMagick-6/
@@ -47,36 +42,29 @@ COPY --from=extract --chmod=755 /sbin/wait-for-redis.py /sbin/
 COPY --from=extract --chmod=755 /sbin/env-from-file.sh /sbin/
 COPY --from=extract --chmod=755 /usr/local/bin/paperless_cmd.sh /usr/local/bin
 COPY --from=extract --chmod=755 /usr/local/bin/flower-conditional.sh /usr/local/bin/
-COPY --from=extract --chmod=755 /usr/src/paperless/src/docker/install_management_commands.sh /usr/src/paperless/src/docker/
-COPY --from=extract --chmod=755 /usr/src/paperless/src/docker/management_script.sh /usr/src/paperless/src/docker/
+
+WORKDIR /usr/src/paperless/src
 
 # Copy requirements.txt
 COPY --from=extract /usr/src/paperless/src/requirements.txt /usr/src/paperless/src/
 
-WORKDIR /usr/src/paperless/src/
-
 RUN --mount=type=cache,target=/root/.cache/pip/,id=pip-cache \
-    apk add -u --virtual .build-deps build-base git libpq-dev mariadb-connector-c-dev pkgconf \
     && python3 -m pip install --no-cache-dir --upgrade wheel \
     && python3 -m pip install --default-timeout=1000 --find-links . --requirement requirements.txt \
     && python3 -m nltk.downloader -d "/usr/share/nltk_data" snowball_data \
     && python3 -m nltk.downloader -d "/usr/share/nltk_data" stopwords \
     && python3 -m nltk.downloader -d "/usr/share/nltk_data" punkt_tab \
-    && apk del .build-deps \
-    && rm -rf /var/cache/apk/* /var/tmp/* /tmp/* \
+    && rm -rf /var/tmp/* /tmp/* \
     && truncate --size 0 /var/log/*log
 
 RUN addgroup -g ${GID} paperless \
-    && adduser -u ${UID} --ingroup paperless --disabled-password --system --home /usr/src/paperless paperless
-
-RUN mkdir -p /usr/src/paperless/data /usr/src/paperless/media /usr/src/paperless/consume /usr/src/paperless/export \
-    && mkdir -m700 --verbose /usr/src/paperless/.gnupg \
+    && adduser -u ${UID} --ingroup paperless --disabled-password --system --home /usr/src/paperless paperless \
     && chown -R paperless:paperless /usr/src/paperless
 
 USER paperless
 
 # Copy backend & frontend
-COPY --from=extract --chown=paperless:paperless /usr/src/paperless/src/ ./
+COPY --from=extract --chown=paperless:paperless /usr/src/paperless/ /usr/src/paperless/
 
 RUN python3 manage.py collectstatic --clear --no-input --link \
     && python3 manage.py compilemessages
