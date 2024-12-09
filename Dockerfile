@@ -25,7 +25,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 RUN apk -U upgrade \
     && apk add -u bash coreutils curl libstdc++ supervisor tzdata \
         font-liberation gettext ghostscript gnupg imagemagick \
-        postgresql16-client \
+        postgresql16-client py3-psycopg-c-pyc \
         mariadb-client \ 
         tesseract-ocr tesseract-ocr-data-eng tesseract-ocr-data-deu tesseract-ocr-data-fra tesseract-ocr-data-ita tesseract-ocr-data-spa \
         unpaper pngquant jbig2dec libxml2 libxslt qpdf \
@@ -58,8 +58,6 @@ WORKDIR /usr/src/paperless/src/
 RUN --mount=type=cache,target=/root/.cache/pip/,id=pip-cache \
     apk add -u --virtual .build-deps build-base git libpq-dev mariadb-connector-c-dev pkgconf \
     && python3 -m pip install --no-cache-dir --upgrade wheel \
-    && curl -fsSL -o psycopg_c-3.2.3-cp312-cp312-linux_x86_64.whl \
-    https://github.com/paperless-ngx/builder/releases/download/psycopg-3.2.3/psycopg_c-3.2.3-cp312-cp312-linux_x86_64.whl \
     && python3 -m pip install --default-timeout=1000 --find-links . --requirement requirements.txt \
     && python3 -m nltk.downloader -d "/usr/share/nltk_data" snowball_data \
     && python3 -m nltk.downloader -d "/usr/share/nltk_data" stopwords \
