@@ -31,7 +31,7 @@ RUN apk -U upgrade \
         unpaper pngquant jbig2dec libxml2 libxslt qpdf \
         file libmagic zlib \
         libzbar poppler-utils \
-        ln -s /usr/bin/supervisord /usr/local/bin/supervisord
+    && ln -s /usr/bin/supervisord /usr/local/bin/supervisord
 
 # Copy docker specific files
 COPY --from=extract /etc/ImageMagick-6/policy.xml /etc/ImageMagick-6/
