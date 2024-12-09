@@ -55,8 +55,8 @@ RUN --mount=type=cache,target=/root/.cache/pip/,id=pip-cache \
     && python3 -m nltk.downloader -d "/usr/share/nltk_data" stopwords \
     && python3 -m nltk.downloader -d "/usr/share/nltk_data" punkt_tab \
     && apk del .build-deps \
-    && sed -i 's/logfile=.*//' /etc/supervisord.conf \
-    && sed -i 's/pidfile=.*//' /etc/supervisord.conf \
+    && sed -i 's/^logfile=.*//' /etc/supervisord.conf \
+    && sed -i 's/^pidfile=.*//' /etc/supervisord.conf \
     && rm -rf /var/cache/apk/* /var/tmp/* /tmp/* 
 
 RUN addgroup -g ${GID} paperless \
