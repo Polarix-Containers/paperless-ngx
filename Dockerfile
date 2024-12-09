@@ -30,8 +30,7 @@ RUN apk -U upgrade \
         tesseract-ocr tesseract-ocr-data-eng tesseract-ocr-data-deu tesseract-ocr-data-fra tesseract-ocr-data-ita tesseract-ocr-data-spa \
         unpaper pngquant jbig2dec libxml2 libxslt qpdf \
         file libmagic zlib \
-        libzbar poppler-utils \
-    && rm -rf /var/cache/apk/*
+        libzbar poppler-utils
 
 # Copy docker specific files
 COPY --from=extract /etc/ImageMagick-6/policy.xml /etc/ImageMagick-6/
@@ -49,12 +48,14 @@ WORKDIR /usr/src/paperless/src
 COPY --from=extract /usr/src/paperless/src/requirements.txt /usr/src/paperless/src/
 
 RUN --mount=type=cache,target=/root/.cache/pip/,id=pip-cache \
-    python3 -m pip install --no-cache-dir --upgrade wheel \
+    apk add -u --virtual .build-deps build-base git libpq-dev mariadb-connector-c-dev pkgconf \
+    && python3 -m pip install --no-cache-dir --upgrade wheel \
     && python3 -m pip install --default-timeout=1000 --find-links . --requirement requirements.txt \
     && python3 -m nltk.downloader -d "/usr/share/nltk_data" snowball_data \
     && python3 -m nltk.downloader -d "/usr/share/nltk_data" stopwords \
     && python3 -m nltk.downloader -d "/usr/share/nltk_data" punkt_tab \
-    && rm -rf /var/tmp/* /tmp/* \
+    && apk del .build-deps \
+    && rm -rf /var/cache/apk/* /var/tmp/* /tmp/* \
     && truncate --size 0 /var/log/*log
 
 RUN addgroup -g ${GID} paperless \
