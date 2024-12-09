@@ -31,7 +31,8 @@ RUN apk -U upgrade \
         unpaper pngquant jbig2dec libxml2 libxslt qpdf \
         file libmagic zlib \
         libzbar poppler-utils \
-    && ln -s /usr/bin/supervisord /usr/local/bin/supervisord
+    && ln -s /usr/bin/supervisord /usr/local/bin/supervisord \
+    && mkdir -p /var/log/supervisord/
 
 # Copy docker specific files
 COPY --from=extract /etc/ImageMagick-6/policy.xml /etc/ImageMagick-6/
@@ -67,9 +68,6 @@ USER paperless
 
 # Copy backend & frontend
 COPY --from=extract --chown=paperless:paperless /usr/src/paperless/ /usr/src/paperless/
-
-RUN python3 manage.py collectstatic --clear --no-input --link \
-    && python3 manage.py compilemessages
 
 COPY --from=ghcr.io/polarix-containers/hardened_malloc:latest /install /usr/local/lib/
 ENV LD_PRELOAD="/usr/local/lib/libhardened_malloc.so"
