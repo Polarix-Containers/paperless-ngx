@@ -1,5 +1,4 @@
-ARG ALPINE=3.20
-ARG PYTHON=3.12
+ARG PYTHON=3.10
 ARG UID=3007
 ARG GID=3007
 
@@ -7,7 +6,7 @@ FROM ghcr.io/paperless-ngx/paperless-ngx:latest AS extract
 
 # We have to pin Alpine version here, as not all dependencies will be immediately
 # available in the latest Alpine version
-FROM python:${PYTHON}-alpine${ALPINE}
+FROM python:${PYTHON}-alpine
 
 LABEL maintainer="Thien Tran contact@tommytran.io"
 
@@ -24,8 +23,6 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 RUN apk -U upgrade \
     && apk add -u bash coreutils curl libstdc++ supervisor tzdata \
         font-liberation gettext ghostscript gnupg imagemagick \
-        postgresql16-client \
-        mariadb-client \ 
         tesseract-ocr tesseract-ocr-data-eng tesseract-ocr-data-deu tesseract-ocr-data-fra tesseract-ocr-data-ita tesseract-ocr-data-spa \
         unpaper pngquant jbig2dec libxml2 libxslt qpdf \
         file libmagic zlib \
