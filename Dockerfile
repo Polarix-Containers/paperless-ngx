@@ -56,7 +56,8 @@ RUN --mount=type=cache,target=/root/.cache/pip/,id=pip-cache \
     && sed -i 's/^pidfile=.*//' /etc/supervisord.conf \
     && rm -rf /var/cache/apk/* /var/tmp/* /tmp/* 
 
-RUN addgroup -g ${GID} paperless \
+RUN --network=none \
+    addgroup -g ${GID} paperless \
     && adduser -u ${UID} --ingroup paperless --disabled-password --system --home /usr/src/paperless paperless \
     && chown -R paperless:paperless /usr/src/paperless
 
