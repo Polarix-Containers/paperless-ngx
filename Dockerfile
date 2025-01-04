@@ -4,6 +4,8 @@ ARG GID=3007
 
 FROM ghcr.io/paperless-ngx/paperless-ngx:latest AS extract
 
+# ======================================= #
+
 # We have to pin Alpine version here, as not all dependencies will be immediately
 # available in the latest Alpine version
 FROM python:${PYTHON}-alpine
