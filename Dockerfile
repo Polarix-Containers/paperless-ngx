@@ -34,7 +34,7 @@ RUN apk -U upgrade \
 # Copy docker specific files
 COPY --from=extract /etc/ImageMagick-6/policy.xml /etc/ImageMagick-6/
 COPY --from=extract /etc/supervisord.conf /etc/
-COPY --from=extract --chmod=755 /sbin/docker-entrypoint.sh /sbin/
+COPY --chmod=755 docker-entrypoint.sh /sbin/
 COPY --from=extract --chmod=755 /sbin/docker-prepare.sh /sbin/
 COPY --from=extract --chmod=755 /sbin/wait-for-redis.py /sbin/
 COPY --from=extract --chmod=755 /sbin/env-from-file.sh /sbin/
