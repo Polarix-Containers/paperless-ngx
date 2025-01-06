@@ -25,7 +25,8 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 RUN apk -U upgrade \
     && apk add -u bash coreutils curl libstdc++ supervisor tzdata \
         font-liberation gettext ghostscript gnupg imagemagick \
-        tesseract-ocr tesseract-ocr-data-eng tesseract-ocr-data-deu tesseract-ocr-data-fra tesseract-ocr-data-ita tesseract-ocr-data-spa \
+        tesseract-ocr tesseract-ocr-data-eng tesseract-ocr-data-deu \
+        tesseract-ocr-data-osd tesseract-ocr-data-fra tesseract-ocr-data-ita tesseract-ocr-data-spa \
         unpaper pngquant jbig2dec libxml2 libxslt qpdf \
         file libmagic zlib \
         libzbar poppler-utils \
