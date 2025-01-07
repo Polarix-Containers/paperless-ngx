@@ -25,6 +25,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 RUN apk -U upgrade \
     && apk add -u bash coreutils curl libstdc++ supervisor tzdata \
         font-liberation gettext ghostscript gnupg imagemagick \
+        mariadb-client postgresql17-client \
         tesseract-ocr tesseract-ocr-data-eng tesseract-ocr-data-osd \
         unpaper pngquant jbig2dec libxml2 libxslt qpdf \
         file libmagic zlib \
