@@ -2,7 +2,7 @@
 # Just a cleaned up version of upstream code so it can run rootless.
 # Language installation removed.
 
-set -eux
+set -eu
 
 map_folders() {
 	# Export these so they can be used in docker-prepare.sh
