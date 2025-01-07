@@ -80,6 +80,8 @@ initialize() {
 	echo "Creating directory scratch directory ${tmp_dir}"
 	mkdir --parents --verbose "${tmp_dir}"
 
+	/sbin/docker-prepare.sh
+
 	# Leave this last thing
 	custom_container_init
 
