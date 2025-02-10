@@ -8,9 +8,9 @@ on:
     # Ignore Markdown files
     paths-ignore:
       - '**.md'
-  schedule:
-    # Build the image daily
-    - cron: '15 0 * * *'
+#  schedule:
+#    # Build the image daily
+#    - cron: '15 0 * * *'
 
 env:
   REGISTRY: ghcr.io
