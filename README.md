@@ -2,7 +2,7 @@
 
 ![Build, scan & push](https://github.com/Polarix-Containers/paperless-ngx/actions/workflows/build.yml/badge.svg)
 
-⚠️ Daily rebuilds temporary put on pause until the next paperless-ngx release so we could adapt to the changes in this [commit](https://github.com/paperless-ngx/paperless-ngx/commit/880f08599ad7534fb99828bd0d695463fccb9810).
+⚠️ Version 2.14.7 is temporarily pinned until the container can be updated to the new setup with s6.
 
 ### Features & usage
 - Drop-in replacement for the [official image](https://github.com/paperless-ngx/paperless-ngx).

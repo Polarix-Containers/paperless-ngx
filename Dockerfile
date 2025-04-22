@@ -2,7 +2,7 @@ ARG PYTHON=3.12
 ARG UID=200005
 ARG GID=200005
 
-FROM ghcr.io/paperless-ngx/paperless-ngx:latest AS extract
+FROM ghcr.io/paperless-ngx/paperless-ngx:2.14.7 AS extract
 
 # ======================================= #
 
