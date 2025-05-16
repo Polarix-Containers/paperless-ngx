@@ -47,7 +47,7 @@ WORKDIR /usr/src/paperless/src/
 COPY --from=extract --chown=1000:1000 /usr/src/paperless/src/ /usr/src/paperless/src/
         
 RUN --mount=type=cache,target=/root/.cache/pip/,id=pip-cache \
-    apk add -u --virtual .build-deps build-base libpq-dev mariadb-connector-c-dev pkgconf \
+    apk add -u --virtual .build-deps build-base libpq-dev mariadb-connector-c-dev pkgconf zxing \
     && python3 -m pip install --no-cache-dir --upgrade wheel \
     && python3 -m pip install --default-timeout=1000 --find-links . --requirement requirements.txt \
     && python3 -m nltk.downloader -d "/usr/share/nltk_data" snowball_data \
