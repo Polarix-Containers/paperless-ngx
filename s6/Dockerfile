@@ -26,7 +26,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     UV_CACHE_DIR=/cache/uv/
 
 RUN apk -U upgrade \
-    && apk add -u bash coreutils curl git libstdc++ s6-overlay tzdata \
+    && apk add -u bash coreutils curl git libstdc++ py3-zxing-cpp s6-overlay tzdata \
         font-liberation gettext ghostscript gnupg imagemagick \
         mariadb-client postgresql17-client \
         tesseract-ocr tesseract-ocr-data-eng tesseract-ocr-data-osd \
@@ -47,7 +47,7 @@ WORKDIR /usr/src/paperless/src/
 COPY --from=extract --chown=1000:1000 /usr/src/paperless/src/ /usr/src/paperless/src/
         
 RUN --mount=type=cache,target=/root/.cache/pip/,id=pip-cache \
-    apk add -u --virtual .build-deps build-base libpq-dev mariadb-connector-c-dev pkgconf zxing \
+    apk add -u --virtual .build-deps build-base libpq-dev mariadb-connector-c-dev pkgconf \
     && python3 -m pip install --no-cache-dir --upgrade wheel \
     && python3 -m pip install --default-timeout=1000 --find-links . --requirement requirements.txt \
     && python3 -m nltk.downloader -d "/usr/share/nltk_data" snowball_data \
