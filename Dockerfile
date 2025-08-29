@@ -8,6 +8,7 @@ ARG GID=200005
 
 
 FROM node:${NODE}-alpine AS compile-frontend
+ARG VERSION
 
 ADD https://github.com/paperless-ngx/paperless-ngx.git#v${VERSION} /src/src-ui
 WORKDIR /src/src-ui
@@ -25,6 +26,7 @@ RUN apk -U upgrade \
 
 FROM ghcr.io/astral-sh/uv:${UV}-python${PYTHON}-alpine AS s6-overlay-base
 
+ARG VERSION
 ARG S6
 
 WORKDIR /usr/src/s6
@@ -54,6 +56,7 @@ RUN mv docker/rootfs / \
 FROM s6-overlay-base AS main-app
 LABEL maintainer="Thien Tran contact@tommytran.io"
 
+ARG VERSION
 ARG UID
 ARG GID
 
