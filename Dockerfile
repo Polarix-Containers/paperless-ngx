@@ -10,7 +10,7 @@ ARG GID=200005
 FROM node:${NODE}-alpine AS compile-frontend
 ARG VERSION
 
-ADD https://github.com/paperless-ngx/paperless-ngx.git#v${VERSION} /src/src-ui
+ADD https://github.com/paperless-ngx/paperless-ngx.git#v${VERSION}:src-ui /src/src-ui
 WORKDIR /src/src-ui
 
 RUN apk -U upgrade \
