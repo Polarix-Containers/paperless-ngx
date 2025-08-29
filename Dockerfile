@@ -47,7 +47,7 @@ RUN apk add curl \
     && rm s6-overlay-noarch.tar.xz.sha256
 
 # Copy our service defs and filesystem
-ADD https://github.com/paperless-ngx/paperless-ngx.git#v${VERSION}:docker .
+ADD https://github.com/paperless-ngx/paperless-ngx.git#v${VERSION}:docker ./docker
 RUN mv docker/rootfs / \
     && rm -rf docker
 
