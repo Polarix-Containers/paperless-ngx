@@ -1,15 +1,57 @@
+ARG VERSION=2.18.2
+ARG NODE=20
 ARG PYTHON=3.12
+ARG UV=0.8.8
+ARG S6=3.2.1.0
 ARG UID=200005
 ARG GID=200005
 
-FROM ghcr.io/paperless-ngx/paperless-ngx:2.14.7 AS extract
+
+FROM node:${NODE}-alpine AS compile-frontend
+
+ADD https://github.com/paperless-ngx/paperless-ngx.git#v${VERSION} /src/src-ui
+WORKDIR /src/src-ui
+
+RUN apk -U upgrade \
+    && npm update -g pnpm \
+    && npm install -g corepack@latest \
+    && corepack enable \
+    && pnpm install \
+    && ./node_modules/.bin/ng build --configuration production
+
 
 # ======================================= #
 
-# We have to pin Alpine version here, as not all dependencies will be immediately
-# available in the latest Alpine version
-FROM python:${PYTHON}-alpine
 
+FROM ghcr.io/astral-sh/uv:${UV}-python${PYTHON}-alpine AS s6-overlay-base
+
+ARG S6
+
+WORKDIR /usr/src/s6
+
+# https://github.com/just-containers/s6-overlay#customizing-s6-overlay-behaviour
+ENV S6_BEHAVIOUR_IF_STAGE2_FAILS=2 \
+    S6_CMD_WAIT_FOR_SERVICES_MAXTIME=0 \
+    S6_VERBOSITY=1 \
+    PATH=/command:$PATH
+
+RUN apk add curl \
+    && curl --fail --silent --no-progress-meter --show-error --location --remote-name-all --parallel --parallel-max 2 \
+        "https://github.com/just-containers/s6-overlay/releases/download/v${S6}/s6-overlay-noarch.tar.xz" \
+        "https://github.com/just-containers/s6-overlay/releases/download/v${S6}/s6-overlay-noarch.tar.xz.sha256" \
+    && sha256sum --check s6-overlay-noarch.tar.xz.sha256 \
+    && tar --directory / -Jxpf s6-overlay-noarch.tar.xz \
+    && rm s6-overlay-noarch.tar.xz \
+    && rm s6-overlay-noarch.tar.xz.sha256
+
+# Copy our service defs and filesystem
+ADD https://github.com/paperless-ngx/paperless-ngx.git#v${VERSION}:docker .
+RUN mv docker/rootfs / \
+    && rm -rf docker
+
+# ======================================= #
+
+FROM s6-overlay-base AS main-app
 LABEL maintainer="Thien Tran contact@tommytran.io"
 
 ARG UID
@@ -18,56 +60,56 @@ ARG GID
 # Set Python environment variables
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
-    PNGX_CONTAINERIZED=1
+    # Ignore warning from Whitenoise about async iterators
+    PYTHONWARNINGS="ignore:::django.http.response:517" \
+    PNGX_CONTAINERIZED=1 \
+    # https://docs.astral.sh/uv/reference/settings/#link-mode
+    UV_LINK_MODE=copy \
+    UV_CACHE_DIR=/cache/uv/
 
 # Install dependencies
 
 RUN apk -U upgrade \
-    && apk add -u bash coreutils curl libstdc++ supervisor tzdata \
+    && apk add -u bash coreutils libstdc++ tzdata \
         font-liberation gettext ghostscript gnupg imagemagick \
         mariadb-client postgresql17-client \
         tesseract-ocr tesseract-ocr-data-eng tesseract-ocr-data-osd \
         unpaper pngquant jbig2dec libxml2 libxslt qpdf \
         file libmagic zlib \
         libzbar poppler-utils \
-    && ln -s /usr/bin/supervisord /usr/local/bin/supervisord
-
-# Copy docker specific files
-COPY --from=extract /etc/ImageMagick-6/policy.xml /etc/ImageMagick-6/
-COPY --from=extract /etc/supervisord.conf /etc/
-COPY --chmod=755 docker-entrypoint.sh /sbin/
-COPY --from=extract --chmod=755 /sbin/docker-prepare.sh /sbin/
-COPY --from=extract --chmod=755 /sbin/wait-for-redis.py /sbin/
-COPY --from=extract --chmod=755 /sbin/env-from-file.sh /sbin/
-COPY --from=extract --chmod=755 /usr/local/bin/paperless_cmd.sh /usr/local/bin
-COPY --from=extract --chmod=755 /usr/local/bin/flower-conditional.sh /usr/local/bin/
+    && cp /etc/ImageMagick-6/paperless-policy.xml /etc/ImageMagick-6/policy.xml
 
 WORKDIR /usr/src/paperless/src
 
-# Copy requirements.txt
-COPY --from=extract /usr/src/paperless/src/requirements.txt /usr/src/paperless/src/
+ADD https://raw.githubusercontent.com/paperless-ngx/paperless-ngx/v{VERSION}/pyproject.toml /usr/src/paperless/src
+ADD https://raw.githubusercontent.com/paperless-ngx/paperless-ngx/v{VERSION}/uv.lock /usr/src/paperless/src
 
-RUN --mount=type=cache,target=/root/.cache/pip/,id=pip-cache \
-    apk add -u --virtual .build-deps build-base git libpq-dev mariadb-connector-c-dev pkgconf \
-    && python3 -m pip install --no-cache-dir --upgrade wheel \
-    && python3 -m pip install --default-timeout=1000 --find-links . --requirement requirements.txt \
+
+RUN apk add -u --virtual .build-deps build-base git mariadb-connector-c-dev pkgconf \
+    && uv export --quiet --no-dev --all-extras --format requirements-txt --output-file requirements.txt \
+    && uv pip install --system --no-python-downloads --python-preference system --requirements requirements.txt \
     && python3 -m nltk.downloader -d "/usr/share/nltk_data" snowball_data \
     && python3 -m nltk.downloader -d "/usr/share/nltk_data" stopwords \
     && python3 -m nltk.downloader -d "/usr/share/nltk_data" punkt_tab \
     && apk del .build-deps \
-    && sed -i 's/^logfile=.*//' /etc/supervisord.conf \
-    && sed -i 's/^pidfile=.*//' /etc/supervisord.conf \
     && rm -rf /var/cache/apk/* /var/tmp/* /tmp/* 
 
 RUN --network=none \
     addgroup -g ${GID} paperless \
     && adduser -u ${UID} --ingroup paperless --disabled-password --system --home /usr/src/paperless paperless \
-    && chown -R paperless:paperless /usr/src/paperless
+    && mkdir -p /usr/src/paperless/{data,media,consume,export,.gnupg} \
+    && chmod 700 /usr/src/paperless/.gnupg \
+    && chown -R paperless:paperless /usr/src/paperless \
+    && s6-setuidgid paperless python3 manage.py collectstatic --clear --no-input --link \
+    && s6-setuidgid paperless python3 manage.py compilemessages
 
 USER paperless
 
-# Copy backend & frontend
-COPY --from=extract --chown=paperless:paperless /usr/src/paperless/ /usr/src/paperless/
+# Copy backend
+ADD --chown=paperless:paperless https://github.com/paperless-ngx/paperless-ngx.git#v${VERSION}:src .
+
+# Copy frontend
+COPY --from=compile-frontend --chown=paperless:paperless /src/src/documents/static/frontend/ ./documents/static/frontend/
 
 COPY --from=ghcr.io/polarix-containers/hardened_malloc:latest /install /usr/local/lib/
 ENV LD_PRELOAD="/usr/local/lib/libhardened_malloc.so"
@@ -79,7 +121,6 @@ VOLUME ["/usr/src/paperless/data", \
 
 EXPOSE 8000/tcp
 
-ENTRYPOINT ["/sbin/docker-entrypoint.sh"]
+ENTRYPOINT ["/init"]
 
-HEALTHCHECK --interval=30s --timeout=10s --retries=5 CMD [ "curl", "-fs", "-S", "--max-time", "2", "http://localhost:8000" ]
-CMD ["/usr/local/bin/paperless_cmd.sh"]
+HEALTHCHECK --interval=30s --timeout=10s --retries=5 CMD [ "curl", "-fs", "-S", "-L", "--max-time", "2", "http://localhost:8000" ]
