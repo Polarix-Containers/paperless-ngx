@@ -100,8 +100,8 @@ RUN apk add -u --virtual .build-deps build-base git mariadb-connector-c-dev pkgc
 RUN --network=none \
     addgroup -g ${GID} paperless \
     && adduser -u ${UID} --ingroup paperless --disabled-password --system --home /usr/src/paperless paperless \
-    && mkdir -p /usr/src/paperless/{data,media,consume,export,.gnupg} \
-    && chmod 700 /usr/src/paperless/.gnupg \
+    && mkdir -p /usr/src/paperless/{data,media,consume,export} \
+    && mkdir -m700 /usr/src/paperless/.gnupg
     && chown -R paperless:paperless /usr/src/paperless \
     && s6-setuidgid paperless python3 manage.py collectstatic --clear --no-input --link \
     && s6-setuidgid paperless python3 manage.py compilemessages
