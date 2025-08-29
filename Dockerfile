@@ -41,7 +41,7 @@ RUN apk add curl \
     && curl --fail --silent --no-progress-meter --show-error --location --remote-name-all --parallel --parallel-max 2 \
         "https://github.com/just-containers/s6-overlay/releases/download/v${S6}/s6-overlay-noarch.tar.xz" \
         "https://github.com/just-containers/s6-overlay/releases/download/v${S6}/s6-overlay-noarch.tar.xz.sha256" \
-    && sha256sum --check s6-overlay-noarch.tar.xz.sha256 \
+    && sha256sum -c s6-overlay-noarch.tar.xz.sha256 \
     && tar --directory / -Jxpf s6-overlay-noarch.tar.xz \
     && rm s6-overlay-noarch.tar.xz \
     && rm s6-overlay-noarch.tar.xz.sha256
