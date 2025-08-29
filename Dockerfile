@@ -81,8 +81,8 @@ RUN apk -U upgrade \
 
 WORKDIR /usr/src/paperless/src
 
-ADD https://raw.githubusercontent.com/paperless-ngx/paperless-ngx/v{VERSION}/pyproject.toml /usr/src/paperless/src
-ADD https://raw.githubusercontent.com/paperless-ngx/paperless-ngx/v{VERSION}/uv.lock /usr/src/paperless/src
+ADD https://raw.githubusercontent.com/paperless-ngx/paperless-ngx/v${VERSION}/pyproject.toml /usr/src/paperless/src
+ADD https://raw.githubusercontent.com/paperless-ngx/paperless-ngx/v${VERSION}/uv.lock /usr/src/paperless/src
 
 
 RUN apk add -u --virtual .build-deps build-base git mariadb-connector-c-dev pkgconf \
