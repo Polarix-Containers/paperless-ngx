@@ -26,6 +26,8 @@ RUN apk -U upgrade \
 
 FROM ghcr.io/astral-sh/uv:${UV}-python${PYTHON}-alpine AS s6-overlay-base
 
+ARG TARGETARCH
+ARG TARGETVARIANT
 ARG VERSION
 ARG S6
 
@@ -38,9 +40,16 @@ ENV S6_BEHAVIOUR_IF_STAGE2_FAILS=2 \
     PATH=/command:$PATH
 
 RUN apk add curl \
-    && curl --fail --silent --no-progress-meter --show-error --location --remote-name-all --parallel --parallel-max 2 \
+    && if [ "${TARGETARCH}${TARGETVARIANT}" = "amd64" ]; then \
+        S6_ARCH="x86_64"; \
+    elif [ "${TARGETARCH}${TARGETVARIANT}" = "arm64" ]; then \
+        S6_ARCH="aarch64"; 
+    fi \
+    && curl --fail --silent --no-progress-meter --show-error --location --remote-name-all --parallel --parallel-max 4 \
         "https://github.com/just-containers/s6-overlay/releases/download/v${S6}/s6-overlay-noarch.tar.xz" \
         "https://github.com/just-containers/s6-overlay/releases/download/v${S6}/s6-overlay-noarch.tar.xz.sha256" \
+        "https://github.com/just-containers/s6-overlay/releases/download/v${S6}/s6-overlay-${S6_ARCH}.tar.xz" \
+        "https://github.com/just-containers/s6-overlay/releases/download/v${S6}/s6-overlay-${S6_ARCH}.tar.xz.sha256" \
     && sha256sum -c s6-overlay-noarch.tar.xz.sha256 \
     && tar --directory / -Jxpf s6-overlay-noarch.tar.xz \
     && rm s6-overlay-noarch.tar.xz \
