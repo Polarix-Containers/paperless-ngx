@@ -57,7 +57,7 @@ RUN apk add curl \
 
 # Copy our service defs and filesystem
 ADD https://github.com/paperless-ngx/paperless-ngx.git#v${VERSION}:docker ./docker
-RUN mv --interactive -t / docker/rootfs/*
+RUN mv --interactive -t / docker/rootfs/* \
     && rm -rf docker
 
 # ======================================= #
