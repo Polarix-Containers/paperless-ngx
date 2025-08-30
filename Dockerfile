@@ -43,7 +43,7 @@ RUN apk add curl \
     && if [ "${TARGETARCH}${TARGETVARIANT}" = "amd64" ]; then \
         S6_ARCH="x86_64"; \
     elif [ "${TARGETARCH}${TARGETVARIANT}" = "arm64" ]; then \
-        S6_ARCH="aarch64"; 
+        S6_ARCH="aarch64"; \
     fi \
     && curl --fail --silent --no-progress-meter --show-error --location --remote-name-all --parallel --parallel-max 4 \
         "https://github.com/just-containers/s6-overlay/releases/download/v${S6}/s6-overlay-noarch.tar.xz" \
