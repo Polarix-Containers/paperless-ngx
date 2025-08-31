@@ -40,7 +40,6 @@ ARG S6_VERBOSITY=1
 ARG PATH=/command:$PATH
 
 RUN apk add curl \
-    && echo "export PATH=$PATH" >> /etc/profile \
     && if [ "${TARGETARCH}${TARGETVARIANT}" = "amd64" ]; then \
         S6_ARCH="x86_64"; \
     elif [ "${TARGETARCH}${TARGETVARIANT}" = "arm64" ]; then \
@@ -51,10 +50,10 @@ RUN apk add curl \
         "https://github.com/just-containers/s6-overlay/releases/download/v${S6}/s6-overlay-noarch.tar.xz.sha256" \
         "https://github.com/just-containers/s6-overlay/releases/download/v${S6}/s6-overlay-${S6_ARCH}.tar.xz" \
         "https://github.com/just-containers/s6-overlay/releases/download/v${S6}/s6-overlay-${S6_ARCH}.tar.xz.sha256" \
-    && sha256sum -c s6-overlay-noarch.tar.xz.sha256 \
+    && sha256sum -c ./*.sha256 \
     && tar --directory / -Jxpf s6-overlay-noarch.tar.xz \
-    && rm s6-overlay-noarch.tar.xz \
-    && rm s6-overlay-noarch.tar.xz.sha256
+    && tar --directory / -Jxpf s6-overlay-${S6_ARCH}.tar.xz \
+    && rm ./*.tar.xz && rm ./*.sha256
 
 # Copy our service defs and filesystem
 ADD https://github.com/paperless-ngx/paperless-ngx.git#v${VERSION}:docker ./docker
