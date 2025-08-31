@@ -34,10 +34,10 @@ ARG S6
 WORKDIR /usr/src/s6
 
 # https://github.com/just-containers/s6-overlay#customizing-s6-overlay-behaviour
-ENV S6_BEHAVIOUR_IF_STAGE2_FAILS=2 \
-    S6_CMD_WAIT_FOR_SERVICES_MAXTIME=0 \
-    S6_VERBOSITY=1 \
-    PATH=/command:$PATH
+ARG S6_BEHAVIOUR_IF_STAGE2_FAILS=2
+ARG S6_CMD_WAIT_FOR_SERVICES_MAXTIME=0
+ARG S6_VERBOSITY=1
+ARG PATH=/command:$PATH
 
 RUN apk add curl \
     && if [ "${TARGETARCH}${TARGETVARIANT}" = "amd64" ]; then \
