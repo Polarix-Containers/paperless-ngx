@@ -40,6 +40,7 @@ ARG S6_VERBOSITY=1
 ARG PATH=/command:$PATH
 
 RUN apk add curl \
+    && echo "export PATH=$PATH" >> /etc/profile \
     && if [ "${TARGETARCH}${TARGETVARIANT}" = "amd64" ]; then \
         S6_ARCH="x86_64"; \
     elif [ "${TARGETARCH}${TARGETVARIANT}" = "arm64" ]; then \
