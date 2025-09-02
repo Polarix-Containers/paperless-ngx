@@ -101,8 +101,8 @@ RUN --network=none \
 
 USER paperless
 
-RUN paperless python3 manage.py collectstatic --clear --no-input --link \
-    && paperless python3 manage.py compilemessages
+RUN python3 manage.py collectstatic --clear --no-input --link \
+    && python3 manage.py compilemessages
 
 # Copy backend
 ADD --chown=paperless:paperless https://github.com/paperless-ngx/paperless-ngx.git#v${VERSION}:src .
