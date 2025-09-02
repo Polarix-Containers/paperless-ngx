@@ -107,7 +107,8 @@ ADD --chown=paperless:paperless https://github.com/paperless-ngx/paperless-ngx.g
 # Copy frontend
 COPY --from=compile-frontend --chown=paperless:paperless /src/src/documents/static/frontend/ ./documents/static/frontend/
 
-RUN python3 manage.py collectstatic --clear --no-input --link \
+RUN sed -i '1s|^#!/usr/bin/env python3|#!/command/with-contenv python3|' manage.py \
+    && python3 manage.py collectstatic --clear --no-input --link \
     && python3 manage.py compilemessages
 
 COPY --from=ghcr.io/polarix-containers/hardened_malloc:latest /install /usr/local/lib/
