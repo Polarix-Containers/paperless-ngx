@@ -87,7 +87,7 @@ RUN apk add -u --virtual .build-deps build-base git libpq-dev mariadb-connector-
     && python3 -m nltk.downloader -d "/usr/share/nltk_data" snowball_data \
     && python3 -m nltk.downloader -d "/usr/share/nltk_data" stopwords \
     && python3 -m nltk.downloader -d "/usr/share/nltk_data" punkt_tab \
-    && apk del .build-deps \
+    # && apk del .build-deps \
     && rm -rf /var/cache/apk/* /var/tmp/* /tmp/* 
 
 RUN --network=none \
