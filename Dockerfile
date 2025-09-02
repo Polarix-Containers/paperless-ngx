@@ -115,7 +115,7 @@ RUN --network=none \
 #    && s6-setuidgid paperless python3 manage.py collectstatic --clear --no-input --link \
 #    && s6-setuidgid paperless python3 manage.py compilemessages
 
-USER paperless
+# USER paperless
 
 # Copy backend
 ADD --chown=paperless:paperless https://github.com/paperless-ngx/paperless-ngx.git#v${VERSION}:src .
