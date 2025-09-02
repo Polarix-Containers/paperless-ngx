@@ -81,7 +81,7 @@ ADD https://raw.githubusercontent.com/paperless-ngx/paperless-ngx/v${VERSION}/py
 ADD https://raw.githubusercontent.com/paperless-ngx/paperless-ngx/v${VERSION}/uv.lock /usr/src/paperless/src
 
 
-RUN apk add -u --virtual .build-deps build-base git libpq-dev mariadb-connector-c-dev pkgconf \
+RUN apk add -u --virtual .build-deps build-base git libpq-dev py3-psycopg-c-pyc mariadb-connector-c-dev pkgconf \
     && uv export --quiet --no-dev --all-extras --format requirements-txt --output-file requirements.txt \
     && uv pip install --system --no-python-downloads --python-preference system --requirements requirements.txt \
     && python3 -m nltk.downloader -d "/usr/share/nltk_data" snowball_data \
