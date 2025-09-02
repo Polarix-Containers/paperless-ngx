@@ -39,7 +39,7 @@ ARG S6_CMD_WAIT_FOR_SERVICES_MAXTIME=0
 ARG S6_VERBOSITY=1
 ARG PATH=/command:$PATH
 
-RUN apk add curl s6-overlay \
+RUN apk add curl s6-overlay
 
 # Copy our service defs and filesystem
 ADD https://github.com/paperless-ngx/paperless-ngx.git#v${VERSION}:docker ./docker
@@ -97,9 +97,9 @@ RUN --network=none \
     && adduser -u ${UID} --ingroup paperless --disabled-password --system --home /usr/src/paperless paperless \
     && mkdir -p /usr/src/paperless/{data,media,consume,export} \
     && mkdir -m700 /usr/src/paperless/.gnupg \
-    && chown -R paperless:paperless /usr/src/paperless \
-    && s6-setuidgid paperless python3 manage.py collectstatic --clear --no-input --link \
-    && s6-setuidgid paperless python3 manage.py compilemessages
+    && chown -R paperless:paperless /usr/src/paperless
+    # && s6-setuidgid paperless python3 manage.py collectstatic --clear --no-input --link \
+    # && s6-setuidgid paperless python3 manage.py compilemessages
 
 USER paperless
 
