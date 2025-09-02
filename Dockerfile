@@ -59,7 +59,8 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PNGX_CONTAINERIZED=1 \
     # https://docs.astral.sh/uv/reference/settings/#link-mode
     UV_LINK_MODE=copy \
-    UV_CACHE_DIR=/cache/uv/
+    UV_CACHE_DIR=/cache/uv/ \
+    UV_NO_MANAGED_PYTHON=true
 
 # Install dependencies
 
@@ -80,13 +81,14 @@ ADD https://raw.githubusercontent.com/paperless-ngx/paperless-ngx/v${VERSION}/uv
 
 
 RUN apk add -u --virtual .build-deps build-base git libpq-dev mariadb-connector-c-dev pkgconf \
-    && uv export --quiet --no-dev --all-extras --format requirements-txt --output-file requirements.txt \
-    && uv pip install --system --no-python-downloads --python-preference system --requirements requirements.txt \
+#   https://github.com/astral-sh/uv/issues/8085
+    && UV_PROJECT_ENVIRONMENT="$(python -c "import sysconfig; print(sysconfig.get_config_var('prefix'))")" \
+    && export UV_PROJECT_ENVIRONMENT \
+    && uv sync --all-extras --compile-bytecode --locked --no-cache --no-dev \
     && python3 -m nltk.downloader -d "/usr/share/nltk_data" snowball_data \
     && python3 -m nltk.downloader -d "/usr/share/nltk_data" stopwords \
     && python3 -m nltk.downloader -d "/usr/share/nltk_data" punkt_tab \
-    # && apk del .build-deps \
-    && uv pip uninstall --system psycopg-c \
+    && apk del .build-deps \
     && rm -rf /var/cache/apk/* /var/tmp/* /tmp/* 
 
 RUN --network=none \
