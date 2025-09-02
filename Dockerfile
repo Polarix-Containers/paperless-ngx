@@ -39,7 +39,7 @@ ARG S6_CMD_WAIT_FOR_SERVICES_MAXTIME=0
 ARG S6_VERBOSITY=1
 ARG PATH=/command:$PATH
 
-RUN apk add curl \
+RUN apk add bash curl \
     && if [ "${TARGETARCH}${TARGETVARIANT}" = "amd64" ]; then \
         S6_ARCH="x86_64"; \
     elif [ "${TARGETARCH}${TARGETVARIANT}" = "arm64" ]; then \
