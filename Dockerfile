@@ -101,14 +101,14 @@ RUN --network=none \
 
 USER paperless
 
-RUN python3 manage.py collectstatic --clear --no-input --link \
-    && python3 manage.py compilemessages
-
 # Copy backend
 ADD --chown=paperless:paperless https://github.com/paperless-ngx/paperless-ngx.git#v${VERSION}:src .
 
 # Copy frontend
 COPY --from=compile-frontend --chown=paperless:paperless /src/src/documents/static/frontend/ ./documents/static/frontend/
+
+RUN python3 manage.py collectstatic --clear --no-input --link \
+    && python3 manage.py compilemessages
 
 COPY --from=ghcr.io/polarix-containers/hardened_malloc:latest /install /usr/local/lib/
 ENV LD_PRELOAD="/usr/local/lib/libhardened_malloc.so"
