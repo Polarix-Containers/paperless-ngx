@@ -98,10 +98,11 @@ RUN --network=none \
     && mkdir -p /usr/src/paperless/{data,media,consume,export} \
     && mkdir -m700 /usr/src/paperless/.gnupg \
     && chown -R paperless:paperless /usr/src/paperless
-    # && s6-setuidgid paperless python3 manage.py collectstatic --clear --no-input --link \
-    # && s6-setuidgid paperless python3 manage.py compilemessages
 
 USER paperless
+
+RUN paperless python3 manage.py collectstatic --clear --no-input --link \
+    && paperless python3 manage.py compilemessages
 
 # Copy backend
 ADD --chown=paperless:paperless https://github.com/paperless-ngx/paperless-ngx.git#v${VERSION}:src .
