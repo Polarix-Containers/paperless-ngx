@@ -88,7 +88,7 @@ RUN apk add -u --virtual .build-deps build-base git libpq-dev py3-psycopg-c mari
     && python3 -m nltk.downloader -d "/usr/share/nltk_data" stopwords \
     && python3 -m nltk.downloader -d "/usr/share/nltk_data" punkt_tab \
     # && apk del .build-deps \
-    && uv pip uninstall psycopg-c \
+    && uv pip uninstall --system psycopg-c \
     && rm -rf /var/cache/apk/* /var/tmp/* /tmp/* 
 
 RUN --network=none \
