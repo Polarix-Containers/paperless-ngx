@@ -57,9 +57,8 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     # Ignore warning from Whitenoise about async iterators
     PYTHONWARNINGS="ignore:::django.http.response:517" \
     PNGX_CONTAINERIZED=1 \
-    # https://docs.astral.sh/uv/reference/settings/#link-mode
-    UV_LINK_MODE=copy \
-    UV_CACHE_DIR=/cache/uv/ \
+    UV_NO_CACHE=true \
+    UV_NO_DEV=true \
     UV_NO_MANAGED_PYTHON=true
 
 # Install dependencies
@@ -84,7 +83,7 @@ RUN apk add -u --virtual .build-deps build-base git libpq-dev mariadb-connector-
 #   https://github.com/astral-sh/uv/issues/8085
     && UV_PROJECT_ENVIRONMENT="$(python -c "import sysconfig; print(sysconfig.get_config_var('prefix'))")" \
     && export UV_PROJECT_ENVIRONMENT \
-    && uv sync --all-extras --compile-bytecode --locked --no-cache --no-dev \
+    && uv sync --all-extras --no-sources \
     && python3 -m nltk.downloader -d "/usr/share/nltk_data" snowball_data \
     && python3 -m nltk.downloader -d "/usr/share/nltk_data" stopwords \
     && python3 -m nltk.downloader -d "/usr/share/nltk_data" punkt_tab \
