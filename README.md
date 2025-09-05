@@ -8,5 +8,5 @@
 - ⚠️ Unprivileged image. Due to how various scripts are coded upstream, you must use 200005 as the UID/GID. Make sure the mountpoints are owned by the same user.
 
 ### Licensing
-- Licensed under GPL 3 to comply with licensing changes by Paperless-ngx.
+- Licensed under GPL 3 to comply with licensing by Paperless-ngx.
 - Any image built by Polarix Containers is provided under the combination of license terms resulting from the use of individual packages.
