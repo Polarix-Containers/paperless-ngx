@@ -82,7 +82,7 @@ RUN --network=none \
     && adduser -u ${UID} --ingroup paperless --disabled-password --system --home /usr/src/paperless paperless \
     && mkdir -p /usr/src/paperless/{data,media,consume,export} \
     && mkdir -m700 /usr/src/paperless/.gnupg \
-    && chown -R paperless:paperless /usr/src/paperless
+    && chown -R paperless:paperless /usr/src/paperless /run
 
 USER paperless
 
