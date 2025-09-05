@@ -47,7 +47,8 @@ ENV S6_BEHAVIOUR_IF_STAGE2_FAILS=2 \
 # Copy our service defs and filesystem
 ADD https://github.com/paperless-ngx/paperless-ngx.git#v${VERSION}:docker /usr/src/s6/docker
 RUN cp -r /usr/src/s6/docker/rootfs/* / \
-    && rm -rf /usr/src/s6/docker
+    && rm -rf /usr/src/s6/docker \
+    && ln -s /bin/bash /usr/bin/bash
 
 # Install dependencies
 RUN apk -U upgrade \
