@@ -13,6 +13,7 @@ ADD https://github.com/paperless-ngx/paperless-ngx.git#v${VERSION}:src-ui /src/s
 WORKDIR /src/src-ui
 
 RUN apk -U upgrade \
+    && npm update -g npm \
     && npm update -g pnpm \
     && npm install -g corepack@latest \
     && corepack enable \
