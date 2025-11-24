@@ -1,4 +1,4 @@
-ARG VERSION=2.19.6
+ARG VERSION=2.20.0
 ARG NODE=20
 ARG PYTHON=3.12
 ARG UV=0.9
@@ -98,7 +98,8 @@ COPY --from=compile-frontend --chown=paperless:paperless /src/src/documents/stat
 
 RUN sed -i '1s|^#!/usr/bin/env python3|#!/command/with-contenv python3|' manage.py \
     && python3 manage.py collectstatic --clear --no-input --link \
-    && python3 manage.py compilemessages
+    && python3 manage.py compilemessages \
+    && /usr/local/bin/deduplicate.py --verbose /usr/src/paperless/static/
 
 COPY --from=ghcr.io/polarix-containers/hardened_malloc:latest /install /usr/local/lib/
 ENV LD_PRELOAD="/usr/local/lib/libhardened_malloc.so"
