@@ -1,4 +1,4 @@
-ARG VERSION=2.20.6
+ARG VERSION=2.20.7
 ARG NODE=24
 ARG PYTHON=3.12
 ARG UV=0.9
@@ -61,7 +61,7 @@ RUN apk -U upgrade \
         tesseract-ocr tesseract-ocr-data-eng tesseract-ocr-data-osd \
         unpaper pngquant jbig2dec libxml2 libxslt qpdf \
         file libmagic zlib \
-        libzbar poppler-utils \
+        poppler-utils \
     && cp /etc/ImageMagick-6/paperless-policy.xml /etc/ImageMagick-6/policy.xml
 
 WORKDIR /usr/src/paperless/src
