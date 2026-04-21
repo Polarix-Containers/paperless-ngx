@@ -1,4 +1,4 @@
-ARG VERSION=2.20.13
+ARG VERSION=2.20.14
 ARG NODE=24
 ARG PYTHON=3.12
 ARG UV=0.10
@@ -97,8 +97,8 @@ ADD --chown=paperless:paperless https://github.com/paperless-ngx/paperless-ngx.g
 COPY --from=compile-frontend --chown=paperless:paperless /src/src/documents/static/frontend/ ./documents/static/frontend/
 
 RUN sed -i '1s|^#!/usr/bin/env python3|#!/command/with-contenv python3|' manage.py \
-    && python3 manage.py collectstatic --clear --no-input --link \
-    && python3 manage.py compilemessages \
+    && PAPERLESS_SECRET_KEY=build-time-dummy python3 manage.py collectstatic --clear --no-input --link \
+    && PAPERLESS_SECRET_KEY=build-time-dummy python3 manage.py compilemessages \
     && /usr/local/bin/deduplicate.py --verbose /usr/src/paperless/static/
 
 COPY --from=ghcr.io/polarix-containers/hardened_malloc:latest /install /usr/local/lib/
