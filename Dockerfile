@@ -38,8 +38,7 @@ ENV S6_BEHAVIOUR_IF_STAGE2_FAILS=2 \
     PNGX_CONTAINERIZED=1 \
     UV_LINK_MODE=copy \
     UV_COMPILE_BYTECODE=true \
-    UV_NATIVE_TLS=true \
-    UV_NO_MANAGED_PYTHON=true
+    UV_NATIVE_TLS=true
 
 # Copy our service defs and filesystem
 ADD https://github.com/paperless-ngx/paperless-ngx.git#v${VERSION}:docker /usr/src/s6/docker
