@@ -39,10 +39,7 @@ ENV S6_BEHAVIOUR_IF_STAGE2_FAILS=2 \
     UV_LINK_MODE=copy \
     UV_COMPILE_BYTECODE=true \
     UV_NATIVE_TLS=true \
-    UV_NO_CACHE=true \
-    UV_NO_DEV=true \
-    UV_NO_MANAGED_PYTHON=true \
-    UV_PYTHON_DOWNLOADS=false
+    UV_NO_MANAGED_PYTHON=true
 
 # Copy our service defs and filesystem
 ADD https://github.com/paperless-ngx/paperless-ngx.git#v${VERSION}:docker /usr/src/s6/docker
@@ -70,10 +67,12 @@ ADD https://raw.githubusercontent.com/paperless-ngx/paperless-ngx/v${VERSION}/uv
 
 
 RUN apk add -u --virtual .build-deps build-base git libpq-dev mariadb-connector-c-dev pkgconf \
-#   https://github.com/astral-sh/uv/issues/8085
-    && UV_PROJECT_ENVIRONMENT="$(python -c "import sysconfig; print(sysconfig.get_config_var('prefix'))")" \
-    && export UV_PROJECT_ENVIRONMENT \
-    && uv sync --all-extras --no-sources \
+    && uv export --quiet --no-dev --all-extras --format requirements-txt --output-file requirements.txt \
+    && uv pip install --no-cache --system --no-python-downloads --python-preference system \
+      --index https://pypi.org/simple \
+      --index https://download.pytorch.org/whl/cpu \
+      --index-strategy unsafe-best-match \
+      --requirements requirements.txt \
     && python3 -m nltk.downloader -d "/usr/share/nltk_data" snowball_data \
     && python3 -m nltk.downloader -d "/usr/share/nltk_data" stopwords \
     && python3 -m nltk.downloader -d "/usr/share/nltk_data" punkt_tab \
