@@ -1,7 +1,7 @@
-ARG VERSION=2.20.15
+ARG VERSION=3.0.0-beta.rc1
 ARG NODE=24
 ARG PYTHON=3.12
-ARG UV=0.10
+ARG UV=0.11
 ARG UID=200005
 ARG GID=200005
 
@@ -14,8 +14,6 @@ WORKDIR /src/src-ui
 
 RUN apk -U upgrade \
     && npm update -g npm \
-    && npm update -g pnpm \
-    && npm install -g corepack@latest \
     && corepack enable \
     && pnpm install \
     && ./node_modules/.bin/ng build --configuration production
@@ -38,6 +36,7 @@ ENV S6_BEHAVIOUR_IF_STAGE2_FAILS=2 \
     # Ignore warning from Whitenoise about async iterators
     PYTHONWARNINGS="ignore:::django.http.response:517" \
     PNGX_CONTAINERIZED=1 \
+    UV_LINK_MODE=copy \
     UV_COMPILE_BYTECODE=true \
     UV_NATIVE_TLS=true \
     UV_NO_CACHE=true \
