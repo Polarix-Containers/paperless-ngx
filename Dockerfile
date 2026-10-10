@@ -74,7 +74,7 @@ RUN apk add -u --virtual .build-deps build-base git libpq-dev mariadb-connector-
 #   https://github.com/astral-sh/uv/issues/8085
     && UV_PROJECT_ENVIRONMENT="$(python -c "import sysconfig; print(sysconfig.get_config_var('prefix'))")" \
     && export UV_PROJECT_ENVIRONMENT \
-    && uv sync --all-extras --no-sources --index-strategy unsafe-best-match \
+    && uv sync --all-extras --no-sources --python-platform x86_64-unknown-linux-musl --index-strategy unsafe-best-match \
     && apk del .build-deps \
     && rm -rf /var/cache/apk/* /var/tmp/* /tmp/* 
 
