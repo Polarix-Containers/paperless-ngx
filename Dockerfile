@@ -55,7 +55,7 @@ RUN --network=none \
 
 # Install dependencies
 RUN apk -U upgrade \
-    && apk add -u bash curl coreutils libstdc++ sed s6-overlay tzdata \
+    && apk add -u bash curl coreutils libstdc++ s6-overlay tzdata \
         font-liberation gettext ghostscript gnupg imagemagick \
         mariadb-client postgresql17-client \
         tesseract-ocr tesseract-ocr-data-eng tesseract-ocr-data-osd \
@@ -69,7 +69,7 @@ WORKDIR /usr/src/paperless/src
 ADD https://raw.githubusercontent.com/paperless-ngx/paperless-ngx/v${VERSION}/pyproject.toml /usr/src/paperless/src
 ADD https://raw.githubusercontent.com/paperless-ngx/paperless-ngx/v${VERSION}/uv.lock /usr/src/paperless/src
 
-RUN sed -i '/[tool.uv]/a no-binary-package = ["torch"]' pyproject.toml
+RUN sed -i '/\[tool.uv\]/a no-binary-package = ["torch"]' pyproject.toml
 
 RUN apk add -u --virtual .build-deps build-base git libpq-dev mariadb-connector-c-dev pkgconf \
 #   https://github.com/astral-sh/uv/issues/8085
