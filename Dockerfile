@@ -1,7 +1,7 @@
-ARG VERSION=2.20.15
+ARG VERSION=3.3.0
 ARG NODE=24
 ARG PYTHON=3.12
-ARG UV=0.10
+ARG UV=0.12
 ARG UID=200005
 ARG GID=200005
 
@@ -75,9 +75,6 @@ RUN apk add -u --virtual .build-deps build-base git libpq-dev mariadb-connector-
     && UV_PROJECT_ENVIRONMENT="$(python -c "import sysconfig; print(sysconfig.get_config_var('prefix'))")" \
     && export UV_PROJECT_ENVIRONMENT \
     && uv sync --all-extras --no-sources \
-    && python3 -m nltk.downloader -d "/usr/share/nltk_data" snowball_data \
-    && python3 -m nltk.downloader -d "/usr/share/nltk_data" stopwords \
-    && python3 -m nltk.downloader -d "/usr/share/nltk_data" punkt_tab \
     && apk del .build-deps \
     && rm -rf /var/cache/apk/* /var/tmp/* /tmp/* 
 
@@ -86,7 +83,7 @@ RUN --network=none \
     && adduser -u ${UID} --ingroup paperless --disabled-password --system --home /usr/src/paperless paperless \
     && mkdir -p /usr/src/paperless/{data,media,consume,export} \
     && mkdir -m700 /usr/src/paperless/.gnupg \
-    && chown -R paperless:paperless /usr/src/paperless /run
+    && chown -R paperless:paperless /usr/src/paperless
 
 USER paperless
 
@@ -97,8 +94,11 @@ ADD --chown=paperless:paperless https://github.com/paperless-ngx/paperless-ngx.g
 COPY --from=compile-frontend --chown=paperless:paperless /src/src/documents/static/frontend/ ./documents/static/frontend/
 
 RUN sed -i '1s|^#!/usr/bin/env python3|#!/command/with-contenv python3|' manage.py \
-    && PAPERLESS_SECRET_KEY=build-time-dummy python3 manage.py collectstatic --clear --no-input --link \
-    && PAPERLESS_SECRET_KEY=build-time-dummy python3 manage.py compilemessages \
+    && chmod 1777 /var/cache/fontconfig \
+    && chmod 1777 /run \
+    && chmod u-s /usr/bin/s6-overlay-suexec \
+    && PAPERLESS_SECRET_KEY=build-time-dummy s6-setuidgid paperless python3 manage.py collectstatic --clear --no-input --link \
+    && PAPERLESS_SECRET_KEY=build-time-dummy s6-setuidgid paperless python3 manage.py compilemessages \
     && /usr/local/bin/deduplicate.py --verbose /usr/src/paperless/static/
 
 COPY --from=ghcr.io/polarix-containers/hardened_malloc:latest /install /usr/local/lib/
