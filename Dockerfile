@@ -69,7 +69,7 @@ WORKDIR /usr/src/paperless/src
 ADD https://raw.githubusercontent.com/paperless-ngx/paperless-ngx/v${VERSION}/pyproject.toml /usr/src/paperless/src
 ADD https://raw.githubusercontent.com/paperless-ngx/paperless-ngx/v${VERSION}/uv.lock /usr/src/paperless/src
 
-COPY pyproject-override.tml .
+COPY pyproject-override.toml .
 RUN tee -a pyproject.toml < pyproject-override.tml
 
 RUN apk add -u --virtual .build-deps build-base git libpq-dev mariadb-connector-c-dev pkgconf \
