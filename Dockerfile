@@ -70,7 +70,7 @@ ADD https://raw.githubusercontent.com/paperless-ngx/paperless-ngx/v${VERSION}/py
 ADD https://raw.githubusercontent.com/paperless-ngx/paperless-ngx/v${VERSION}/uv.lock /usr/src/paperless/src
 
 COPY pyproject-override.toml .
-RUN tee -a pyproject.toml < pyproject-override.tml
+RUN tee -a pyproject.toml < pyproject-override.toml
 
 RUN apk add -u --virtual .build-deps build-base git libpq-dev mariadb-connector-c-dev pkgconf \
 #   https://github.com/astral-sh/uv/issues/8085
