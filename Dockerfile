@@ -55,7 +55,7 @@ RUN --network=none \
 
 # Install dependencies
 RUN apk -U upgrade \
-    && apk add -u bash curl coreutils libstdc++ s6-overlay tzdata \
+    && apk add -u bash curl coreutils libstdc++ sed s6-overlay tzdata \
         font-liberation gettext ghostscript gnupg imagemagick \
         mariadb-client postgresql17-client \
         tesseract-ocr tesseract-ocr-data-eng tesseract-ocr-data-osd \
